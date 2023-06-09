@@ -1,5 +1,11 @@
 import { FC } from 'react'
 import { APP_NAME } from '@/lib/consts'
+<<<<<<< HEAD
+=======
+import Link from 'next/link';
+import Head from 'next/head'
+import Header from '@/components/Header'
+>>>>>>> b10cfa4ec855fce0db9eef62d0198625f4b3f571
 
 import Image from 'next/image'
 import ConnectWallet from '@/components/ConnectWallet'
@@ -9,9 +15,16 @@ import { Publication } from '@/interfaces'
 
 const Home: FC = () => {
 	return (
-		<div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
-			<div className="absolute top-6 right-6">
-				<ConnectWallet />
+		<div className=" relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+			<Head>
+				<title>Medium Blog</title>
+				<link rel="icon" href="/favicon.ico" />
+			</Head>
+
+
+			<div className="absolute top-6 left-6">
+				<Header />
+				
 			</div>
 			<ThemeSwitcher className="absolute bottom-6 right-6" />
 			<div className="container mx-auto p-4">
