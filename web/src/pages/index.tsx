@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Head from 'next/head'
 import Header from '@/components/Header'
 
-import ConnectWallet from '@/components/ConnectWallet'
 import { BookOpenIcon, CodeIcon, ShareIcon } from '@heroicons/react/outline'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 
@@ -19,7 +18,7 @@ const Home: FC = () => {
 
 			<div className="absolute top-6 right-6">
 				<Header />
-				<ConnectWallet />
+				
 			</div>
 			<ThemeSwitcher className="absolute bottom-6 right-6" />
 			<div className="max-w-6xl mx-auto sm:px-6 lg:px-8">
