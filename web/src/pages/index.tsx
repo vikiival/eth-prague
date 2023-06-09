@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { APP_NAME } from '@/lib/consts'
 
-import Link from 'next/link';
+import Link from 'next/link'
 import Head from 'next/head'
 import Header from '@/components/Header'
 
@@ -19,28 +19,33 @@ const Home: FC = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
-
 			<div className="absolute top-6 left-6">
 				<Header />
-				
 			</div>
 			<ThemeSwitcher className="absolute bottom-6 right-6" />
 			<div className="container mx-auto p-4">
 				<h1 className="text-2xl font-bold mb-4">Publications</h1>
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 					{mockPublications.map((publication: Publication) => (
-						<div key={publication.id} className="border rounded-lg overflow-hidden w-60 h-80">
-							<div className="relative h-48 w-full">
-								<Image src={publication.image} alt={publication.name} layout="fill" objectFit="cover" />
-							</div>
-							<div className="p-4">
-								<div className="mb-2 font-semibold">{publication.name}</div>
-								<div className="flex justify-between items-center">
-									<span>{publication.articles?.length} Articles</span>
-									<span>${publication.price.toFixed(2)}</span>
+						<Link key={publication.id} href={`/publication/${publication.id}`}>
+							<a key={publication.id} className="border rounded-lg overflow-hidden w-60 h-80">
+								<div className="relative h-48 w-full">
+									<Image
+										src={publication.image}
+										alt={publication.name}
+										layout="fill"
+										objectFit="cover"
+									/>
 								</div>
-							</div>
-						</div>
+								<div className="p-4">
+									<div className="mb-2 font-semibold">{publication.name}</div>
+									<div className="flex justify-between items-center">
+										<span>{publication.articles?.length} Articles</span>
+										<span>${publication.price.toFixed(2)}</span>
+									</div>
+								</div>
+							</a>
+						</Link>
 					))}
 				</div>
 			</div>

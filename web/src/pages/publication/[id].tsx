@@ -11,7 +11,7 @@ const Article: FC = () => {
 			<div className="absolute top-6 right-6">
 				<ConnectWallet />
 			</div>
-            Article page: ${id}
+            Publication page: {id}
 			<ThemeSwitcher className="absolute bottom-6 right-6" />
 		</div>
 	)
