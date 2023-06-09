@@ -1,9 +1,8 @@
 import { FC } from 'react'
 import { APP_NAME } from '@/lib/consts'
-import Link from 'next/link'
+
 import Image from 'next/image'
 import ConnectWallet from '@/components/ConnectWallet'
-import { BookOpenIcon, CodeIcon, ShareIcon } from '@heroicons/react/outline'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import mockPublications from '@/mockData'
 import { Publication } from '@/interfaces'
@@ -20,12 +19,13 @@ const Home: FC = () => {
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 					{mockPublications.map((publication: Publication) => (
 						<div key={publication.id} className="border rounded-lg overflow-hidden w-60 h-80">
-							<div className="relative h-48 w-full	">
+							<div className="relative h-48 w-full">
 								<Image src={publication.image} alt={publication.name} layout="fill" objectFit="cover" />
 							</div>
 							<div className="p-4">
+								<div className="mb-2 font-semibold">{publication.name}</div>
 								<div className="flex justify-between items-center">
-									<span className="font-semibold">{publication.name}</span>
+									<span>{publication.articles?.length} Articles</span>
 									<span>${publication.price.toFixed(2)}</span>
 								</div>
 							</div>
