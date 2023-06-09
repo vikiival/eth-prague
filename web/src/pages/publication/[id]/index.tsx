@@ -8,7 +8,17 @@ import mockPublications from '@/mockData'
 const Article: FC = () => {
 	const router = useRouter()
 	const { id } = router.query
+	// If id is not available, return loading text
+	if (!id) {
+		return <div>Loading...</div>
+	}
+
 	const publication = mockPublications.find(publication => publication.id === id)
+
+	// If publication is not found, return not found text
+	if (!publication) {
+		return <div>Publication not found</div>
+	}
 	return (
 		<div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
 			<div className="absolute top-6 right-6">
@@ -20,12 +30,12 @@ const Article: FC = () => {
 					{/* Banner Image */}
 					<div className="w-full">
 						<Image
-							src={publication.image}
+							src={publication.image || ''}
 							alt={publication.name}
 							layout="responsive"
 							width={1200}
 							height={400}
-							className='object-cover'
+							className="object-cover"
 						/>
 					</div>
 					{/* Info Section */}
