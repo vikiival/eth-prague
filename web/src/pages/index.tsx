@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import { APP_NAME } from '@/lib/consts'
+import Link from 'next/link';
 import ConnectWallet from '@/components/ConnectWallet'
 import { BookOpenIcon, CodeIcon, ShareIcon } from '@heroicons/react/outline'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
@@ -12,6 +13,12 @@ const Home: FC = () => {
 			</div>
 			<ThemeSwitcher className="absolute bottom-6 right-6" />
 			<div className="max-w-6xl mx-auto sm:px-6 lg:px-8">
+				<div className='mb-6 space-x-4'>
+				<Link href="/profile">Profile</Link>
+				<Link href="/frontier_details">Frontier Details</Link>
+				<Link href="/articles/5">Article</Link>
+
+				</div>
 				<div className="flex justify-center pt-8 sm:justify-start sm:pt-0">
 					<h1 className="text-6xl font-bold dark:text-white">{APP_NAME}</h1>
 				</div>
