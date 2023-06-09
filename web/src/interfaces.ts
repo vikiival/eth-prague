@@ -6,4 +6,10 @@ export interface Publication {
     description?: string;
     image?: string;
     articles?: id[];
+    price: number
+}
+
+export interface Article {
+    id: id;
+
 }
