@@ -1,11 +1,9 @@
 import { FC } from 'react'
 import { APP_NAME } from '@/lib/consts'
-<<<<<<< HEAD
-=======
+
 import Link from 'next/link';
 import Head from 'next/head'
 import Header from '@/components/Header'
->>>>>>> b10cfa4ec855fce0db9eef62d0198625f4b3f571
 
 import Image from 'next/image'
 import ConnectWallet from '@/components/ConnectWallet'
