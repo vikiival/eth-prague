@@ -6,7 +6,9 @@ module.exports = {
 		extend: {
 			fontFamily: {
 				'dela-gothic': ['Dela Gothic One', 'cursive'],
-			  },
+				'roboto': ['Roboto', 'sans-serif'],
+  
+			},
 		},
 	},
 	plugins: [],
