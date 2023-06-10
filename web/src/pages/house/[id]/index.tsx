@@ -9,7 +9,7 @@ import nftABI from '@/abi/NFTAbi.json'
 import registeryABI from '@/abi/RegistryAbi.json'
 import { $purify } from '@kodadot1/minipfs'
 
-
+import { articles } from '@/articels/articles'
 
 const NFT_CONTRACT_ADDRESS = '0x9dfef6f53783c7185c69f45a51bede2c32e4ac3e'
 const REGISTERY_CONTRACT_ADDRESS = '0x02101dfB77FDE026414827Fdc604ddAF224F0921'
@@ -108,7 +108,9 @@ const House: FC = () => {
 							<div className="mt-2">{publication.description}</div>
 							<div className="mt-2">
 								<span>House Address:</span>{' '}
-								<a className='text-blue-500 underline' href={`${etherScanBaseUrl}${houseAddress}`}>{houseAddress}</a>
+								<a className="text-blue-500 underline" href={`${etherScanBaseUrl}${houseAddress}`}>
+									{houseAddress}
+								</a>
 							</div>
 							{/* <div className="mt-2">Price: ${publication.price.toFixed(2)}</div> */}
 						</div>
@@ -119,11 +121,38 @@ const House: FC = () => {
 					{/* Articles Section */}
 					<div className="mt-6">
 						<h2 className="text-xl font-semibold mb-2">Articles:</h2>
-						{/* <ul>
-                            {publication.articles.map((article) => (
-                                <li key={article.id} className="border-b py-2">{article.title}</li>
-                            ))}
-                        </ul> */}
+						{articles.map((article, index) => (
+							<div key={index} className="flex items-start space-x-4">
+								{/* Article Image */}
+								<div className="w-1/3">
+									<img
+										src={$purify(article.image)[0]}
+										alt={article.name}
+										className="rounded-md max-w-full h-auto"
+									/>
+								</div>
+								{/* Article Information */}
+								<div className="w-2/3">
+									<h3 className="font-bold text-2xl">{article.name}</h3>
+									<p className="text-sm text-gray-500 mb-2">created by:</p>
+									<div className="text-base">{article.content}</div>
+									{/* Tags */}
+									<div className="mt-2">
+										<span className="font-semibold">Tags:</span>
+										<ul className="inline-block pl-2">
+											{article.tags.map((tag, index) => (
+												<li
+													key={index}
+													className="inline-block mr-2 text-sm bg-gray-200 rounded-full px-2"
+												>
+													{tag}
+												</li>
+											))}
+										</ul>
+									</div>{' '}
+								</div>
+							</div>
+						))}
 					</div>
 				</div>
 			</div>

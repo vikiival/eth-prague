@@ -1,4 +1,4 @@
-const articles = [
+export const articles = [
     {
         "version": "2.0.0",
         "metadata_id": "ef40f3a7-aacb-43e2-96f6-b9f540b8b5b8",
