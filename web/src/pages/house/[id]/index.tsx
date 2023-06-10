@@ -1,16 +1,15 @@
 import { FC, useEffect, useState } from 'react'
-import ConnectWallet from '@/components/ConnectWallet'
 import Header from '@/components/Header'
 
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import mockPublications from '@/mockData/mockPub'
 import { useContractRead } from 'wagmi'
 import nftABI from '@/abi/NFTAbi.json'
 import registeryABI from '@/abi/RegistryAbi.json'
-import { $purify, $obtain, URI } from '@kodadot1/minipfs'
-import { URL } from 'url'
+import { $purify } from '@kodadot1/minipfs'
+
+
 
 const NFT_CONTRACT_ADDRESS = '0x9dfef6f53783c7185c69f45a51bede2c32e4ac3e'
 const REGISTERY_CONTRACT_ADDRESS = '0x02101dfB77FDE026414827Fdc604ddAF224F0921'
@@ -19,7 +18,7 @@ const SALT = 6551
 
 const etherScanBaseUrl = 'https://goerli.etherscan.io/address/'
 
-const Article: FC = () => {
+const House: FC = () => {
 	const router = useRouter()
 	const { id } = router.query
 	const [publication, setPublication] = useState(null)
@@ -132,4 +131,4 @@ const Article: FC = () => {
 	)
 }
 
-export default Article
+export default House
