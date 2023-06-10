@@ -4,12 +4,13 @@ import Header from '@/components/Header'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import { useContractRead, useContractReads } from 'wagmi'
+import { useContractRead } from 'wagmi'
 import nftABI from '@/abi/NFTAbi.json'
 import registeryABI from '@/abi/RegistryAbi.json'
 import { $purify } from '@kodadot1/minipfs'
-
 import { articles } from '@/articels/articles'
+import { useAccount } from 'wagmi'
+
 import Link from 'next/link'
 
 const NFT_CONTRACT_ADDRESS = '0x9dfef6f53783c7185c69f45a51bede2c32e4ac3e'
@@ -25,6 +26,7 @@ const House: FC = () => {
 	const [publication, setPublication] = useState(null)
 	const [houseAddress, setHouseAddress] = useState(null)
 	const [owner, setOwner] = useState(null)
+	const { address, isConnecting, isDisconnected, isConnected } = useAccount()
 
 	const nftContract = {
 		addressOrName: NFT_CONTRACT_ADDRESS,
@@ -49,6 +51,8 @@ const House: FC = () => {
 		contractInterface: registeryABI,
 	})
 
+	const isOwner = owner === address
+
 	const getEtherScanLink = (address: string) => {
 		return `${etherScanBaseUrl}${address}`
 	}
@@ -61,7 +65,6 @@ const House: FC = () => {
 
 	useEffect(() => {
 		if (ownerAddress) {
-			console.log('owner', ownerAddress)
 			setOwner(ownerAddress)
 		}
 	}, [ownerAddress])
@@ -133,7 +136,13 @@ const House: FC = () => {
 							{/* <div className="mt-2">Price: ${publication.price.toFixed(2)}</div> */}
 						</div>
 						<div>
-							<button className="bg-blue-500 text-white px-4 py-2 rounded">Buy/Sell</button>
+							<button
+								className={`bg-blue-500 text-white px-4 py-2 rounded ${
+									!isConnected ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
+								}`}
+							>
+								Buy
+							</button>{' '}
 						</div>
 					</div>
 					{/* Articles Section */}
