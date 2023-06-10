@@ -5,53 +5,79 @@ import { useRouter } from 'next/router'
 import Image from 'next/image'
 import mockPublications from '@/mockData/mockPub'
 import { useContractRead } from 'wagmi'
-import abi from '@/NFTAbi.json'
+import nftABI from '@/abi/NFTAbi.json'
+import registeryABI from '@/abi/RegistryAbi.json'
 import { $purify, $obtain, URI } from '@kodadot1/minipfs'
 import { URL } from 'url'
 
-const CONTRACT_ADDRESS = '0x9dfef6f53783c7185c69f45a51bede2c32e4ac3e'
+const NFT_CONTRACT_ADDRESS = '0x9dfef6f53783c7185c69f45a51bede2c32e4ac3e'
+const REGISTERY_CONTRACT_ADDRESS = '0x02101dfB77FDE026414827Fdc604ddAF224F0921'
+const IMPLEMENTATION = '0xf999F659c5Ab90E42E466B367BB56e8BD56cE524'
+const SALT = 6551
+
+const etherScanBaseUrl = 'https://goerli.etherscan.io/address/'
 
 const Article: FC = () => {
 	const router = useRouter()
 	const { id } = router.query
-	const [publication, setPublication] = useState(null);
+	const [publication, setPublication] = useState(null)
+	const [houseAddress, setHouseAddress] = useState(null)
 
-	const { data, isError, isLoading } = useContractRead({
-		addressOrName: CONTRACT_ADDRESS,
+	const {
+		data: nftData,
+		isError,
+		isLoading,
+	} = useContractRead({
+		addressOrName: NFT_CONTRACT_ADDRESS,
 		functionName: 'tokenURI',
-		args: [id],
-		contractInterface: abi,
+		args: [0],
+		contractInterface: nftABI,
 	})
 
+	const { data: registeryData } = useContractRead({
+		addressOrName: REGISTERY_CONTRACT_ADDRESS,
+		functionName: 'account',
+		args: [IMPLEMENTATION, 5, NFT_CONTRACT_ADDRESS, 0, SALT],
+		contractInterface: registeryABI,
+	})
+
+	if (registeryData) {
+		console.log('registeryData', registeryData)
+	}
 
 	useEffect(() => {
-		if (data) {
-			const uri = $purify(data as unknown as string);
-			console.log(uri);
+		if (registeryData) {
+			setHouseAddress(registeryData)
+		}
+	}, [registeryData])
+
+	useEffect(() => {
+		if (nftData) {
+			const uri = $purify(nftData as unknown as string)
+			console.log(uri)
 
 			fetch(uri[0] as unknown as string)
 				.then(response => response.json())
 				.then(fetchedData => {
-					const cleanImage = $purify(fetchedData.image as unknown as string);
-					console.log('cleanImage', cleanImage);
-					fetchedData.image = cleanImage[0] as unknown as string;
-					console.log('fetchedData', fetchedData);
-					setPublication(fetchedData);
+					const cleanImage = $purify(fetchedData.image as unknown as string)
+					console.log('cleanImage', cleanImage)
+					fetchedData.image = cleanImage[0] as unknown as string
+					console.log('fetchedData', fetchedData)
+					setPublication(fetchedData)
 				})
 				.catch(err => {
-					console.error("Failed to fetch publication", err);
-				});
+					console.error('Failed to fetch publication', err)
+				})
 		}
-	}, [data]);
+	}, [nftData])
 	// If id is not available, return loading text
 	if (!id) {
 		return <div>Loading...</div>
 	}
 
-
 	// If id or data is not available, return loading text
 	if (!id || !publication) {
-		return <div>Loading...</div>;
+		return <div>Loading...</div>
 	}
 	return (
 		<div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
@@ -70,14 +96,19 @@ const Article: FC = () => {
 							// fill={true}
 							width={1200}
 							height={600}
-							style={{objectFit: "contain"}}	
-							className='object-contain'					/>
+							style={{ objectFit: 'contain' }}
+							className="object-contain"
+						/>
 					</div>
 					{/* Info Section */}
 					<div className="flex justify-between items-start mt-4">
 						<div>
 							<div className="text-2xl font-semibold">{publication.name}</div>
 							<div className="mt-2">{publication.description}</div>
+							<div className="mt-2">
+								<span>House Address:</span>{' '}
+								<a className='text-blue-500 underline' href={`${etherScanBaseUrl}${houseAddress}`}>{houseAddress}</a>
+							</div>
 							{/* <div className="mt-2">Price: ${publication.price.toFixed(2)}</div> */}
 						</div>
 						<div>
