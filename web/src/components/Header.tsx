@@ -2,25 +2,32 @@ import React from 'react';
 import Link from "next/link";
 import ConnectWallet from '@/components/ConnectWallet'
 
-function Header() {
+import { useRouter } from 'next/router';
+
+export default function Header() {
+  const router = useRouter();
+
   return (
-    <header className='flex justify-between p-5 mx-auto '>
-        <div className="flex items-center space-x-5">
-            <Link href="/">
-                <img className="w-44 object-contain cursor-pointer" src="https://links.papareact.com/yvf" alt="" />
-            </Link>
-            <div className="hidden md:inline-flex items-center space-x-5">
-                <h3>About</h3>
-                <h3>Contact</h3>
-                <h3 className="text-white bg-green-600 px-4 py-1 rounded-full">Follow</h3>
-            </div>
-        </div>
+    <nav className=" w-full flex items-center justify-between p-6 bg-white shadow">
+      <div className="text-2xl font-dela-gothic text-black" >
+        <Link href="/">
+          <a>Quire</a>
+        </Link>
+      </div>
 
-        <div className="flex items-center space-x-5 text-green-600">
-            <ConnectWallet />
-        </div>
-    </header>
-  )
+      <div className="flex items-center space-x-4">
+        <Link href="/browse">
+          <a className="text-black">Browse</a>
+        </Link>
+
+        <button
+          onClick={() => router.push('/wallet')}
+          className="py-2 px-4 bg-[#16392D] font-roboto text-white rounded-full"
+        >
+          Connect Wallet
+        </button>
+        <ConnectWallet />
+      </div>
+    </nav>
+  );
 }
-
-export default Header
