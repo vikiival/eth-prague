@@ -1,13 +1,22 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { FC } from 'react';
+import ThemeSwitcher from '@/components/ThemeSwitcher'
+import Header from '@/components/Header'
+
 
 
 const Test: FC = () => {
   return (
+		<div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+			<div className="w-full absolute top-0">
+				<Header />
+			</div>
 
-    <div className="flex flex-col items-center space-y-6">
-      <div className="w-ee h-64 relative overflow-hidden rounded-md">
+			<ThemeSwitcher className="absolute bottom-6 right-6" />
+
+    <div className="flex flex-col items-center py-20 space-y-6">
+      <div className="w-250 h-64 relative overflow-hidden rounded-md">
         <Image 
           src="https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg"
           alt="Frame 13"
@@ -49,6 +58,8 @@ const Test: FC = () => {
           <div className="mt-0 text-sm text-black font-roboto text-opacity-75">Enim placerat eu libero faucibus...</div>
         </div>
     </div>
+    </div>
+
 
   );
 }
