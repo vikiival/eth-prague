@@ -126,11 +126,15 @@ const House: FC = () => {
 							<div key={index} className="flex items-start space-x-4">
 								{/* Article Image */}
 								<div className="w-1/3">
-									<img
-										src={$purify(article.image)[0]}
-										alt={article.name}
-										className="rounded-md max-w-full h-auto"
-									/>
+									<Link href={`/house/${id}/article/${index}`}>
+										<a className="block">
+											<img
+												src={$purify(article.image)[0]}
+												alt={article.name}
+												className="rounded-md max-w-full h-auto"
+											/>
+										</a>
+									</Link>
 								</div>
 								{/* Article Information */}
 								<div className="w-2/3">
