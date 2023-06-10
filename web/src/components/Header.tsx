@@ -20,12 +20,6 @@ export default function Header() {
           <a className="text-black">Browse</a>
         </Link>
 
-        <button
-          onClick={() => router.push('/wallet')}
-          className="py-2 px-4 bg-[#16392D] font-roboto text-white rounded-full"
-        >
-          Connect Wallet
-        </button>
         <ConnectWallet />
       </div>
     </nav>
