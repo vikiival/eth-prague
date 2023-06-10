@@ -10,6 +10,9 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
+          <link rel="icon" href="/favicon.ico" />
+          <title>Quire</title>
+
         </Head>
         <body>
           <Main />
