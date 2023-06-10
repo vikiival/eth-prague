@@ -9,6 +9,7 @@ const nextConfig = {
 			'upload.wikimedia.org',
 			'assets.coingecko.com',
 			'images.pexels.com',
+			'image.w.kodadot.xyz'
 		],
 	},
 }
