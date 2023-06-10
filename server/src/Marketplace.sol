@@ -1,364 +1,219 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.7;
+
 import "openzeppelin-contracts/token/ERC721/IERC721.sol";
 import "openzeppelin-contracts/security/ReentrancyGuard.sol";
 
-/////@dev errors
+// ORIGINAL SOURCE https://github.com/PatrickAlphaC/hardhat-nft-marketplace-fcc
+
+error PriceNotMet(address nftAddress, uint256 tokenId, uint256 price);
+error ItemNotForSale(address nftAddress, uint256 tokenId);
+error NotListed(address nftAddress, uint256 tokenId);
+error AlreadyListed(address nftAddress, uint256 tokenId);
+error NoProceeds();
+error NotOwner();
 error NotApprovedForMarketplace();
-error NotApprovedForAuction();
-error AuctionNotEnded();
+error PriceMustBeAboveZero();
 
-contract MarketPlace is ReentrancyGuard {
-    //@dev state variables
-    address payable public immutable owner; //owner of the contract
-    uint256 public itemCount; // item count
+// Error thrown for isNotOwner modifier
+// error IsNotOwner()
 
-
-    ////////@dev constructor
-    constructor() {
-        owner = payable(msg.sender);
-    }
-
-    ////@dev struct of items
-
-    struct Item {
-        uint256 id;
-        address nft;
-        uint256 tokenId;
-        address payable seller;
-        bool sold;
+contract Marketplace is ReentrancyGuard {
+    struct Listing {
         uint256 price;
-        string name;
-        string description;
-        string image;
+        address seller;
     }
 
-    //@dev mappings
-    mapping(uint256 => Item) public items; // item id to item
-    mapping(uint256 => uint256) _security; // security front running
+    event ItemListed(
+        address indexed seller,
+        address indexed nftAddress,
+        uint256 indexed tokenId,
+        uint256 price
+    );
 
-    //@modifiers
+    event ItemCanceled(
+        address indexed seller,
+        address indexed nftAddress,
+        uint256 indexed tokenId
+    );
 
-    //@dev security front running modifier
-    modifier securityFrontRunning(uint256 _itemId) {
-        Item storage item = items[_itemId];
-        require(
-            _security[_itemId] == 0 || _security[_itemId] > block.number,
-            "error security"
-        );
+    event ItemBought(
+        address indexed buyer,
+        address indexed nftAddress,
+        uint256 indexed tokenId,
+        uint256 price
+    );
 
-        _security[_itemId] = block.number;
+    mapping(address => mapping(uint256 => Listing)) private s_listings;
+    mapping(address => uint256) private s_proceeds;
+
+    modifier notListed(
+        address nftAddress,
+        uint256 tokenId
+    ) {
+        Listing memory listing = s_listings[nftAddress][tokenId];
+        if (listing.price > 0) {
+            revert AlreadyListed(nftAddress, tokenId);
+        }
         _;
     }
 
-    //@dev onlyOwner modifier
-    modifier onlyOwner() {
-        require(msg.sender == owner);
+    modifier isListed(address nftAddress, uint256 tokenId) {
+        Listing memory listing = s_listings[nftAddress][tokenId];
+        if (listing.price <= 0) {
+            revert NotListed(nftAddress, tokenId);
+        }
         _;
     }
 
-    ///////@dev events
-    event Listed(
-        uint256 id,
-        address nft,
+    modifier isOwner(
+        address nftAddress,
         uint256 tokenId,
-        uint256 price,
-        address seller
-    );
-
-    event Sold(
-        uint256 id,
-        address nft,
-        uint256 tokenId,
-        uint256 price,
-        address seller,
-        address buyer
-    );
-
-    //@dev functions
-
-    function listNFT(
-        address _nft,
-        uint256 _tokenId,
-        uint256 _price,
-        string memory _name,
-        string memory _description,
-        string memory _image
-    ) public nonReentrant {
-        require(_price > 0, "price must be greater than 0");
-        IERC721 nft = IERC721(_nft); // cast address to IERC721
-        if (nft.ownerOf(_tokenId) == msg.sender) {
-            // check if the msg.sender is the owner of the NFT
-
-            if (nft.getApproved(_tokenId) != address(this)) {
-                revert NotApprovedForMarketplace();
-            }
-            itemCount++; // increment the item count
-            items[itemCount] = Item( // add the item to the items mapping
-                itemCount,
-                _nft,
-                _tokenId,
-                payable(msg.sender),
-                false,
-                _price,
-                _name,
-                _description,
-                _image
-            );
-            emit Listed(itemCount, address(_nft), _tokenId, _price, msg.sender); // emit the listed event
-        } else {
-            revert("you are not the owner of this NFT");
+        address spender
+    ) {
+        IERC721 nft = IERC721(nftAddress);
+        address owner = nft.ownerOf(tokenId);
+        if (spender != owner) {
+            revert NotOwner();
         }
-    }
-
-    ///@dev buy function
-
-    function buyNFT(uint256 _itemId)
-        public
-        payable
-        nonReentrant
-        securityFrontRunning(_itemId)
-    {
-        Item storage item = items[_itemId]; // get the item from the items mapping
-        require(item.sold == false, "item already sold"); // check if the item is already sold
-        require(msg.value == item.price, "insufficient funds"); // check if the msg.value is greater than or equal to the item price
-        IERC721(item.nft).safeTransferFrom(
-            item.seller,
-            msg.sender,
-            item.tokenId
-        ); // trasnfer the nft to the buyer        Item.sold = true; // set the item sold state to true
-        uint256 sellerAmount = item.price; // calculate the seller amount
-        payable(item.seller).transfer(sellerAmount); // transfer the seller amount to the seller
-        emit Sold(
-            item.id,
-            item.nft,
-            item.tokenId,
-            item.price,
-            item.seller,
-            msg.sender
-        ); // emit the sold event
-        delete items[_itemId]; // delete the item from the items mapping
-    }
-
-    ///@dev cancel function
-
-    function cancelSale(uint256 _itemId)
-        public
-        nonReentrant
-        securityFrontRunning(_itemId)
-    {
-        Item storage item = items[_itemId]; // get the item from the items mapping
-        require(item.sold == false, "item already sold"); // check if the item is already sold
-        require(item.seller == msg.sender, "you are not the seller"); // check if the msg.sender is the seller
-        delete items[_itemId]; // delete the item from the items mapping
-    }
-
-    ///@dev withdraw founds function
-
-    function withdrawFunds() public nonReentrant onlyOwner {
-        payable(owner).transfer(address(this).balance);
-    }
-
-    ///@dev get items for front end function
-
-    function getItems(uint256 _itemId) public view returns (Item memory) {
-        Item storage itemsList = items[_itemId]; // get specific item from the items mapping
-        return itemsList; // return the item
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////@dev AUCTION CODE
-    ////////////////////////////////////////////////////////////////////////////////////
-
-    uint256 public auctionCount; // auction count
-
-    ///@dev struct of auctions
-
-    struct Auction {
-        uint256 id;
-        address nft;
-        uint256 tokenId;
-        address payable seller;
-        bool sold;
-        uint256 startPrice;
-        uint256 price;
-        uint256 endTime;
-        address payable highestBidder;
-        string name;
-        string description;
-        string image;
-    }
-
-    /////////////////@dev mappings
-    mapping(uint256 => Auction) public auctions; // auction id to auction
-    mapping(uint256 => uint256) _securityAuction; // security front running
-
-    ////@dev modifiers
-
-    modifier securityFrontRunningAuction(uint256 _itemId) {
-        Auction storage item = auctions[_itemId];
-        require(
-            _security[_itemId] == 0 || _security[_itemId] > block.number,
-            "error security"
-        );
-        _security[_itemId] = block.number;
         _;
     }
-    /////////////////////////////////@dev events
-    event ListedAuction(
-        uint256 id,
-        address nft,
-        uint256 tokenId,
-        uint256 price,
-        address seller
-    );
-    event Bid(
-        uint256 id,
-        address nft,
-        uint256 tokenId,
-        uint256 price,
-        address seller
-    );
-    event SoldAuction(
-        uint256 id,
-        address nft,
-        uint256 tokenId,
-        uint256 price,
-        address seller,
-        address buyer
-    );
 
-    //////////////////////@dev functions auction
-    ///@dev function to create auction
-
-    function listNFTAuction(
-        address _nft,
-        uint256 _tokenId,
-        uint256 _price,
-        uint256 _endTime,
-        string memory _name,
-        string memory _description,
-        string memory _image
-    ) public nonReentrant {
-        require(_price > 0, "price must be greater than 0");
-        IERC721 nft = IERC721(_nft); // cast address to IERC721
-        if (nft.ownerOf(_tokenId) == msg.sender) {
-            // check if the msg.sender is the owner of the NFT
-
-            if (nft.getApproved(_tokenId) != address(this)) {
-                revert NotApprovedForMarketplace();
-            }
-            auctionCount++; // increment the auction count
-            auctions[auctionCount] = Auction( // add the auction to the auctions mapping
-                auctionCount,
-                _nft,
-                _tokenId,
-                payable(msg.sender),
-                false,
-                _price,
-                _price,
-                _endTime,
-                payable(address(0)),
-                _name,
-                _description,
-                _image
-            );
-            emit ListedAuction(
-                auctionCount,
-                address(_nft),
-                _tokenId,
-                _price,
-                msg.sender
-            ); // emit the listed event
-        } else {
-            revert("you are not the owner of this NFT");
+    // IsNotOwner Modifier - Nft Owner can't buy his/her NFT
+    // Modifies buyItem function
+    // Owner should only list, cancel listing or update listing
+    /* modifier isNotOwner(
+        address nftAddress,
+        uint256 tokenId,
+        address spender
+    ) {
+        IERC721 nft = IERC721(nftAddress);
+        address owner = nft.ownerOf(tokenId);
+        if (spender == owner) {
+            revert IsNotOwner();
         }
-    }
+        _;
+    } */
 
-    ///@dev bid function
-
-    function bidAuction(uint256 _auctionId)
-        public
-        payable
-        nonReentrant
-        securityFrontRunningAuction(_auctionId)
-    {
-        Auction storage auction = auctions[_auctionId]; // get the auction from the auctions mapping
-        require(auction.sold == false, "auction already sold"); // check if the auction is already sold
-        require(msg.value > auction.price, "insufficient funds"); // check if the msg.value is greater than or equal to the auction price
-        require(block.timestamp < auction.endTime, "auction has ended"); // check if the auction has ended
-
-        if (auction.highestBidder != msg.sender) {
-            payable(auction.highestBidder).transfer(auction.price); // transfer the seller amount to the seller
-        }
-        auction.highestBidder = payable(msg.sender); // new best bidder
-        auction.price = msg.value; // new auction price
-        emit Bid(
-            auction.id,
-            auction.nft,
-            auction.tokenId,
-            auction.price,
-            auction.seller
-        ); // emit the bid event
-    }
-
-    function closeOffering(uint256 _itemId)
+    /////////////////////
+    // Main Functions //
+    /////////////////////
+    /*
+     * @notice Method for listing NFT
+     * @param nftAddress Address of NFT contract
+     * @param tokenId Token ID of NFT
+     * @param price sale price for each item
+     */
+    function listItem(
+        address nftAddress,
+        uint256 tokenId,
+        uint256 price
+    )
         external
-        securityFrontRunningAuction(_itemId)
+        notListed(nftAddress, tokenId)
+        isOwner(nftAddress, tokenId, msg.sender)
     {
-        Auction storage itemAuction = auctions[_itemId];
-        require(
-            msg.sender == itemAuction.seller,
-            "you dont are the owner of the nft"
-        );
-        require(
-            itemAuction.endTime < block.timestamp,
-            "error time is not over"
-        );
-        require(itemAuction.sold == false, "error nft sold");
-        IERC721 nft = IERC721(itemAuction.nft);
-        if (nft.getApproved(itemAuction.tokenId) != address(this)) {
-            // if the nft is not approved for the marketplace
-            if (itemAuction.highestBidder != address(0)) {
-                // if there is a highest bidder
-               payable(itemAuction.highestBidder).transfer(itemAuction.price); // transfer the seller amount to the seller
-            }
-
-            delete (auctions[_itemId]);
+        if (price <= 0) {
+            revert PriceMustBeAboveZero();
+        }
+        IERC721 nft = IERC721(nftAddress);
+        if (nft.getApproved(tokenId) != address(this)) {
             revert NotApprovedForMarketplace();
         }
-        itemAuction.sold = true;
-
-        payable(itemAuction.seller).transfer(itemAuction.price); // transfer the seller amount to the seller
-        IERC721(itemAuction.nft).transferFrom(
-            itemAuction.seller,
-            itemAuction.highestBidder,
-            itemAuction.tokenId
-        );
-        emit SoldAuction(
-            itemAuction.id,
-            itemAuction.nft,
-            itemAuction.tokenId,
-            itemAuction.price,
-            itemAuction.seller,
-            itemAuction.highestBidder
-        );
-        delete (auctions[_itemId]);
+        s_listings[nftAddress][tokenId] = Listing(price, msg.sender);
+        emit ItemListed(msg.sender, nftAddress, tokenId, price);
     }
 
-    ///@dev cancel function
-
-    function cancelAuction(uint256 _itemId)
-        public
-        nonReentrant
-        securityFrontRunningAuction(_itemId)
+    /*
+     * @notice Method for cancelling listing
+     * @param nftAddress Address of NFT contract
+     * @param tokenId Token ID of NFT
+     */
+    function cancelListing(address nftAddress, uint256 tokenId)
+        external
+        isOwner(nftAddress, tokenId, msg.sender)
+        isListed(nftAddress, tokenId)
     {
-        Auction storage item = auctions[_itemId]; // get the auction from the auctions mapping
-        require(item.sold == false, "auction already sold"); // check if the auction is already sold
-        require(item.seller == msg.sender, "you are not the seller"); // check if the msg.sender is the seller
-        if (item.startPrice != item.price) {
-            payable(item.highestBidder).transfer(item.price); // transfer the seller amount to the seller
+        delete (s_listings[nftAddress][tokenId]);
+        emit ItemCanceled(msg.sender, nftAddress, tokenId);
+    }
+
+    /*
+     * @notice Method for buying listing
+     * @notice The owner of an NFT could unapprove the marketplace,
+     * which would cause this function to fail
+     * Ideally you'd also have a `createOffer` functionality.
+     * @param nftAddress Address of NFT contract
+     * @param tokenId Token ID of NFT
+     */
+    function buyItem(address nftAddress, uint256 tokenId)
+        external
+        payable
+        isListed(nftAddress, tokenId)
+        // isNotOwner(nftAddress, tokenId, msg.sender)
+        nonReentrant
+    {
+        Listing memory listedItem = s_listings[nftAddress][tokenId];
+        if (msg.value < listedItem.price) {
+            revert PriceNotMet(nftAddress, tokenId, listedItem.price);
         }
-        delete auctions[_itemId]; // delete the auction from the auctions mapping
+        s_proceeds[listedItem.seller] += msg.value;
+        
+        delete (s_listings[nftAddress][tokenId]);
+        IERC721(nftAddress).safeTransferFrom(listedItem.seller, msg.sender, tokenId);
+        emit ItemBought(msg.sender, nftAddress, tokenId, listedItem.price);
+    }
+
+    /*
+     * @notice Method for updating listing
+     * @param nftAddress Address of NFT contract
+     * @param tokenId Token ID of NFT
+     * @param newPrice Price in Wei of the item
+     */
+    function updateListing(
+        address nftAddress,
+        uint256 tokenId,
+        uint256 newPrice
+    )
+        external
+        isListed(nftAddress, tokenId)
+        nonReentrant
+        isOwner(nftAddress, tokenId, msg.sender)
+    {
+        //We should check the value of `newPrice` and revert if it's below zero (like we also check in `listItem()`)
+        if (newPrice <= 0) {
+            revert PriceMustBeAboveZero();
+        }
+        s_listings[nftAddress][tokenId].price = newPrice;
+        emit ItemListed(msg.sender, nftAddress, tokenId, newPrice);
+    }
+
+    /*
+     * @notice Method for withdrawing proceeds from sales
+     */
+    function withdrawProceeds() external {
+        uint256 proceeds = s_proceeds[msg.sender];
+        if (proceeds <= 0) {
+            revert NoProceeds();
+        }
+        s_proceeds[msg.sender] = 0;
+        (bool success, ) = payable(msg.sender).call{value: proceeds}("");
+        require(success, "Transfer failed");
+    }
+
+    /////////////////////
+    // Getter Functions //
+    /////////////////////
+
+    function getListing(address nftAddress, uint256 tokenId)
+        external
+        view
+        returns (Listing memory)
+    {
+        return s_listings[nftAddress][tokenId];
+    }
+
+    function getProceeds(address seller) external view returns (uint256) {
+        return s_proceeds[seller];
     }
 }
