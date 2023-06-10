@@ -8,7 +8,7 @@ import Header from '@/components/Header'
 import Image from 'next/image'
 import ConnectWallet from '@/components/ConnectWallet'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
-import mockPublications from '@/mockData'
+import mockPublications from '@/mockData/mockPub'
 import { Publication } from '@/interfaces'
 
 const Home: FC = () => {

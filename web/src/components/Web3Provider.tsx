@@ -1,13 +1,21 @@
 import { useTheme } from 'next-themes'
 import { APP_NAME } from '@/lib/consts'
-import { createClient, WagmiConfig } from 'wagmi'
+import { configureChains, createClient, WagmiConfig } from 'wagmi'
+import { publicProvider } from 'wagmi/providers/public'
+import { mainnet, goerli } from 'wagmi/chains'
 import { ConnectKitProvider, getDefaultClient } from 'connectkit'
 
+
+const { chains } = configureChains(
+	[mainnet, goerli],
+	[publicProvider()],
+  )
 const client = createClient(
 	getDefaultClient({
 		appName: APP_NAME,
 		autoConnect: true,
 		infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
+		chains
 	})
 )
 
