@@ -4,7 +4,7 @@ import Header from '@/components/Header'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import { useContractRead } from 'wagmi'
+import { useContractRead, useContractReads } from 'wagmi'
 import nftABI from '@/abi/NFTAbi.json'
 import registeryABI from '@/abi/RegistryAbi.json'
 import { $purify } from '@kodadot1/minipfs'
@@ -24,16 +24,22 @@ const House: FC = () => {
 	const { id } = router.query
 	const [publication, setPublication] = useState(null)
 	const [houseAddress, setHouseAddress] = useState(null)
+	const [owner, setOwner] = useState(null)
 
-	const {
-		data: nftData,
-		isError,
-		isLoading,
-	} = useContractRead({
+	const nftContract = {
 		addressOrName: NFT_CONTRACT_ADDRESS,
+		contractInterface: nftABI,
+	}
+	const { data: nftData } = useContractRead({
+		...nftContract,
 		functionName: 'tokenURI',
 		args: [0],
-		contractInterface: nftABI,
+	})
+
+	const { data: ownerAddress } = useContractRead({
+		...nftContract,
+		functionName: 'ownerOf',
+		args: [0],
 	})
 
 	const { data: registeryData } = useContractRead({
@@ -43,8 +49,8 @@ const House: FC = () => {
 		contractInterface: registeryABI,
 	})
 
-	if (registeryData) {
-		console.log('registeryData', registeryData)
+	const getEtherScanLink = (address: string) => {
+		return `${etherScanBaseUrl}${address}`
 	}
 
 	useEffect(() => {
@@ -54,17 +60,22 @@ const House: FC = () => {
 	}, [registeryData])
 
 	useEffect(() => {
+		if (ownerAddress) {
+			console.log('owner', ownerAddress)
+			setOwner(ownerAddress)
+		}
+	}, [ownerAddress])
+
+	useEffect(() => {
 		if (nftData) {
+			console.log('nftData', nftData)
 			const uri = $purify(nftData as unknown as string)
-			console.log(uri)
 
 			fetch(uri[0] as unknown as string)
 				.then(response => response.json())
 				.then(fetchedData => {
 					const cleanImage = $purify(fetchedData.image as unknown as string)
-					console.log('cleanImage', cleanImage)
 					fetchedData.image = cleanImage[0] as unknown as string
-					console.log('fetchedData', fetchedData)
 					setPublication(fetchedData)
 				})
 				.catch(err => {
@@ -108,8 +119,14 @@ const House: FC = () => {
 							<div className="text-2xl font-semibold">{publication.name}</div>
 							<div className="mt-2">{publication.description}</div>
 							<div className="mt-2">
+								<span>Owner:</span>{' '}
+								<a className="text-blue-500 underline" href={getEtherScanLink(owner)}>
+									{owner}
+								</a>
+							</div>
+							<div className="mt-2">
 								<span>House Address:</span>{' '}
-								<a className="text-blue-500 underline" href={`${etherScanBaseUrl}${houseAddress}`}>
+								<a className="text-blue-500 underline" href={getEtherScanLink(houseAddress)}>
 									{houseAddress}
 								</a>
 							</div>
