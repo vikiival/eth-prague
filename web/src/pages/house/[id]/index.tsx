@@ -1,5 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import ConnectWallet from '@/components/ConnectWallet'
+import Header from '@/components/Header'
+
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
@@ -81,12 +83,12 @@ const Article: FC = () => {
 	}
 	return (
 		<div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
-			<div className="absolute top-0">
-				<ConnectWallet />
+			<div className="w-full absolute top-0">
+				<Header />
 			</div>
 			<ThemeSwitcher className="absolute bottom-6 right-6" />
-			<div className="container mx-auto p-4">
-				<div className="w-full">
+			<div className="container mx-auto p-4 py-20">
+				<div className="w-full py-10">
 					{/* Banner Image */}
 					<div className="w-full">
 						<Image
