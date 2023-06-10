@@ -9,5 +9,5 @@ test:
 deploy WHAT:
   forge create --rpc-url $RPC_URL \
     --private-key $PRIVATE_KEY {{ WHAT }} \
-    --etherscan-api-key $ETHERSCAN_API_KEY FKJZBUYA8JBZGRNAE7RGDZT23ZVSTCD3DC \
+    --etherscan-api-key $ETHERSCAN_API_KEY \
     --verify
