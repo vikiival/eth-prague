@@ -5,60 +5,46 @@ import type { FC } from 'react';
 
 const Test: FC = () => {
   return (
-<div className="relative w-screen min-h-screen bg-white overflow-hidden flex items-start">
-      <div className="absolute w-full min-h-screen flex flex-col items-center gap-10 p-6">
 
-        <div className="flex flex-col items-end gap-6">
-          <div className="flex flex-col items-start gap-6">
-            <div className="w-132 h-72 flex items-center justify-center p-2.5 rounded-md overflow-hidden">
-              <Image 
-              src="https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg"
-              alt="Frame 13"
-              width={600}
-							height={600}
-              className="rounded-full"
-              
-              />
-            </div>
-            <div className="text-black font-dela-gothic font-bold text-2xl w-130">
-              Hallstatt article
-            </div>
-            <div className="flex justify-between items-center w-132">
-              <div className="flex items-center gap-4">
-                <div className="text-green-700 font-normal text-lg">
-                  Creator:
+    <div className="flex flex-col items-center space-y-6">
+      <div className="w-64 h-64 relative overflow-hidden rounded-md">
+        <Image 
+        src="https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg"
+        alt="Frame 13"
+
+        layout="fill" objectFit="cover"
+        
+        />
+      </div>
+      <div className="flex flex-col max-w-2xl items-start space-y-6">
+        <div className="text-base text-[#16392d] font-dela-gothic flex flex-col w-auto h-auto">Hallstatt article </div>
+          <div className="flex justify-between items-center w-auto h-auto">
+            <div className="flex items-center space-x-4 w-60 h-auto">
+              <div className="text-sm font-roboto text-[#16392d] font-bold w-auto h-auto whitespace-nowrap flex flex-col">
+                Creator:
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-green-700 font-normal text-lg lowercase">
-                    789OHUGN98JIO
-                  </div>
+              <div className="flex items-center space-x-3 w-auto h-auto">
+                <div className="w-5 h-5  flex items-center justify-center p-2.5 rounded-xl bg-center bg-no-repeat bg-cover overflow-hidden"
+                  style={{backgroundImage: `url('https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg')`}}>
                 </div>
+                <div className="text-sm text-[#16392d] font-roboto lowercase w-auto h-auto whitespace-nowrap flex flex-col">789OHUGN98JIO</div>
               </div>
-              <div className="px-8.5 py-2.5 border-2 border-green-400 rounded-full bg-green-400">
-                <Link href="/publication">
-                  <a className="text-black font-rubik font-bold text-lg">
-                    View publication
-                  </a>
-                </Link>
-              </div>
-              <div className="flex items-center gap-3">
-                <p>
-                Lorem ipsum dolor sit amet consectetur. Congue risus sit elementum urna facilisis dignissim sem. Id morbi massa sed pretium commodo sit id. Risus auctor diam sed ornare maecenas risus diam integer. A aenean facilisis elit tincidunt imperdiet adipiscing turpis hendrerit.
-
-                Vitae nunc urna nunc et ultricies proin. Sed sed habitant pellentesque amet. Proin dolor eget ridiculus nec. Sit interdum tortor et non ut in purus nec. Eget neque et ut in faucibus. Pulvinar sit in in posuere et velit habitant. Est a in fermentum nibh interdum urna ultrices scelerisque. Fermentum rhoncus mi 
-
-                malesuada sed et in magna. Tincidunt quis urna odio amet odio. Ac sagittis neque nunc quam dui. Sed sed leo et facilisis sit arcu.
-                Proin semper vel quam augue augue pharetra vitae. Sed a nibh ut auctor eu velit. Turpis ullamcorper ac nisi imperdiet tellus porttitor tellus lacinia et. Nibh at purus in dolor elit bibendum. Imperdiet faucibus duis mi sapien consequat viverra condimentum tempor velit. Ut lorem et orci ut id vitae. Id adipiscing vitae leo et enim magna volutpat. Duis odio pulvinar ornare in quis. Cras felis quis vulputate praesent nisi arcu sed adipiscing. Sagittis libero faucibus cursus mattis venenatis semper id cursus cursus. Leo integer phasellus nullam vivamus semper vel. Euismod eu tristique cursus ullamcorper metus felis.
-                Morbi nibh ipsum risus nisl eget nisi velit etiam. Quam odio et lectus at tincidunt habitant viverra. Aliquam mauris pulvinar sed amet nulla egestas. Lorem ac viverra a pellentesque sit sit sed est in. Mi nisi magna id ultrices id ipsum. Dignissim cursus pellentesque at in massa urna duis eget consectetur. Magna nec molestie sociis proin molestie. Sociis dui at a tristique tincidunt.
-                Enim placerat eu libero faucibus. Facilisis et egestas viverra proin. Diam nunc rhoncus ullamcorper nisi neque. Quam urna parturient fringilla elit. Nulla amet accumsan quis proin at facilisis commodo amet. Consectetur eget diam vel integer mi ac pellentesque nisi. Faucibus gravida viverra ut arcu id vulputate id.
-                </p>
-              </div>
+            </div>
+            <div className="w-auto  font-roboto h-auto px-4 py-1 border-2 border-[#84eda6] rounded-full bg-[#84eda6]">
+              <div className="text-sm text-[#16392d] font-roboto w-auto h-auto whitespace-nowrap flex flex-col">View publication</div>
             </div>
           </div>
-
-          
         </div>
-      </div>
+        <div className="flex flex-col max-w-2xl w-auto h-auto space-y-6">
+          <div className="text-sm text-black font-roboto text-opacity-75">Lorem ipsum dolor sit amet consectetur. Congue risus sit elementum urna facilisis dignissim sem. Id morbi massa sed pretium commodo sit id. Risus auctor diam sed ornare maecenas risus diam integer. A aenean facilisis elit tincidunt imperdiet adipiscing turpis hendrerit.</div>
+          <div className="mt-0 text-sm text-black font-roboto text-opacity-75"></div>
+          <div className="mt-0 text-sm text-black font-roboto text-opacity-75">Vitae nunc urna nunc et ultricies proin...</div>
+          <div className="mt-0 text-sm text-black font-roboto text-opacity-75"></div>
+          <div className="mt-0 text-sm text-black font-roboto text-opacity-75">malesuada sed et in magna...</div>
+          <div className="mt-0 text-sm text-black font-roboto text-opacity-75">Proin semper vel quam augue augue pharetra vitae...</div>
+          <div className="mt-0 text-sm text-black font-roboto text-opacity-75">Morbi nibh ipsum risus nisl eget nisi velit etiam...</div>
+          <div className="mt-0 text-sm text-black font-roboto text-opacity-75">Enim placerat eu libero faucibus...</div>
+        </div>
     </div>
 
   );
