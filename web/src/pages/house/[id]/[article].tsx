@@ -8,15 +8,15 @@ import mockArticles from '@/mockData/mockArticle'
 
 import Header from '@/components/Header'
 
-/*
-		<div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
-			<div className="absolute top-6 right-6">
-				<ConnectWallet />
-			</div>
-            Article page: {id}
-			<ThemeSwitcher className="absolute bottom-6 right-6" />
-		</div>
-		*/
+
+		// <div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+		// 	<div className="absolute top-6 right-6">
+		// 		<ConnectWallet />
+		// 	</div>
+        //     Article page: {id}
+		// 	<ThemeSwitcher className="absolute bottom-6 right-6" />
+		// </div>
+		
 
 const Article: FC = () => {
     const router = useRouter();

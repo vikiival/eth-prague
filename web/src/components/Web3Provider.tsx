@@ -1,21 +1,23 @@
 import { useTheme } from 'next-themes'
 import { APP_NAME } from '@/lib/consts'
 import { configureChains, createClient, WagmiConfig } from 'wagmi'
-import { publicProvider } from 'wagmi/providers/public'
+import { publicProvider, } from 'wagmi/providers/public'
+import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { mainnet, goerli } from 'wagmi/chains'
 import { ConnectKitProvider, getDefaultClient } from 'connectkit'
 
+const ALCHEMY_API_KEY = 'XMzdOiwPLUhKZ0OfdoYY2uZ4c64qZyaG'
+
 
 const { chains } = configureChains(
-	[mainnet, goerli],
-	[publicProvider()],
+	[goerli],
+	[alchemyProvider({ apiKey: ALCHEMY_API_KEY }), publicProvider()],
   )
 const client = createClient(
 	getDefaultClient({
 		appName: APP_NAME,
 		autoConnect: true,
-		infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
-		chains
+		chains,
 	})
 )
 
