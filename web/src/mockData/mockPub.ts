@@ -1,4 +1,4 @@
-import { Publication } from "./interfaces";
+import { Publication } from "../interfaces";
 
 
 const mockPublications: Publication[] = [

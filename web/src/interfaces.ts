@@ -10,6 +10,12 @@ export interface Publication {
 }
 
 export interface Article {
-    id: id;
-
+    id: string;
+    title: string;
+    publicationId: string;
+    summary: string;
+    image: string;
+    author: string;
+    content: string;
+    publishDate: string;
 }

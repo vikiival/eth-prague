@@ -3,7 +3,7 @@ import ConnectWallet from '@/components/ConnectWallet'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import mockPublications from '@/mockData'
+import mockPublications from '@/mockData/mockPub'
 
 const Article: FC = () => {
 	const router = useRouter()
