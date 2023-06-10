@@ -35,7 +35,11 @@ const Article: FC = () => {
 
 	return (
 		<div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+			<div className="w-full absolute top-0">
+				<Header />
+			</div>
 
+			<ThemeSwitcher className="absolute bottom-6 right-6" />
 		<div className="container mx-auto p-4">
 				<div className="w-full">
 					{/* Banner Image */}
