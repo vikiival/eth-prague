@@ -4,12 +4,13 @@ import Header from '@/components/Header'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import { useContractRead } from 'wagmi'
+import { useContractRead, useContractReads } from 'wagmi'
 import nftABI from '@/abi/NFTAbi.json'
 import registeryABI from '@/abi/RegistryAbi.json'
 import { $purify } from '@kodadot1/minipfs'
 
 import { articles } from '@/articels/articles'
+import Link from 'next/link'
 
 const NFT_CONTRACT_ADDRESS = '0x9dfef6f53783c7185c69f45a51bede2c32e4ac3e'
 const REGISTERY_CONTRACT_ADDRESS = '0x02101dfB77FDE026414827Fdc604ddAF224F0921'
@@ -23,16 +24,22 @@ const House: FC = () => {
 	const { id } = router.query
 	const [publication, setPublication] = useState(null)
 	const [houseAddress, setHouseAddress] = useState(null)
+	const [owner, setOwner] = useState(null)
 
-	const {
-		data: nftData,
-		isError,
-		isLoading,
-	} = useContractRead({
+	const nftContract = {
 		addressOrName: NFT_CONTRACT_ADDRESS,
+		contractInterface: nftABI,
+	}
+	const { data: nftData } = useContractRead({
+		...nftContract,
 		functionName: 'tokenURI',
 		args: [0],
-		contractInterface: nftABI,
+	})
+
+	const { data: ownerAddress } = useContractRead({
+		...nftContract,
+		functionName: 'ownerOf',
+		args: [0],
 	})
 
 	const { data: registeryData } = useContractRead({
@@ -42,8 +49,8 @@ const House: FC = () => {
 		contractInterface: registeryABI,
 	})
 
-	if (registeryData) {
-		console.log('registeryData', registeryData)
+	const getEtherScanLink = (address: string) => {
+		return `${etherScanBaseUrl}${address}`
 	}
 
 	useEffect(() => {
@@ -53,17 +60,22 @@ const House: FC = () => {
 	}, [registeryData])
 
 	useEffect(() => {
+		if (ownerAddress) {
+			console.log('owner', ownerAddress)
+			setOwner(ownerAddress)
+		}
+	}, [ownerAddress])
+
+	useEffect(() => {
 		if (nftData) {
+			console.log('nftData', nftData)
 			const uri = $purify(nftData as unknown as string)
-			console.log(uri)
 
 			fetch(uri[0] as unknown as string)
 				.then(response => response.json())
 				.then(fetchedData => {
 					const cleanImage = $purify(fetchedData.image as unknown as string)
-					console.log('cleanImage', cleanImage)
 					fetchedData.image = cleanImage[0] as unknown as string
-					console.log('fetchedData', fetchedData)
 					setPublication(fetchedData)
 				})
 				.catch(err => {
@@ -107,8 +119,14 @@ const House: FC = () => {
 							<div className="text-2xl font-semibold">{publication.name}</div>
 							<div className="mt-2">{publication.description}</div>
 							<div className="mt-2">
+								<span>Owner:</span>{' '}
+								<a className="text-blue-500 underline" href={getEtherScanLink(owner)}>
+									{owner}
+								</a>
+							</div>
+							<div className="mt-2">
 								<span>House Address:</span>{' '}
-								<a className="text-blue-500 underline" href={`${etherScanBaseUrl}${houseAddress}`}>
+								<a className="text-blue-500 underline" href={getEtherScanLink(houseAddress)}>
 									{houseAddress}
 								</a>
 							</div>
@@ -125,31 +143,39 @@ const House: FC = () => {
 							<div key={index} className="flex items-start space-x-4">
 								{/* Article Image */}
 								<div className="w-1/3">
-									<img
-										src={$purify(article.image)[0]}
-										alt={article.name}
-										className="rounded-md max-w-full h-auto"
-									/>
+									<Link href={`/house/${id}/article/${index}`}>
+										<a className="block">
+											<img
+												src={$purify(article.image)[0]}
+												alt={article.name}
+												className="rounded-md max-w-full h-auto"
+											/>
+										</a>
+									</Link>
 								</div>
 								{/* Article Information */}
 								<div className="w-2/3">
-									<h3 className="font-bold text-2xl">{article.name}</h3>
-									<p className="text-sm text-gray-500 mb-2">created by:</p>
-									<div className="text-base">{article.content}</div>
-									{/* Tags */}
-									<div className="mt-2">
-										<span className="font-semibold">Tags:</span>
-										<ul className="inline-block pl-2">
-											{article.tags.map((tag, index) => (
-												<li
-													key={index}
-													className="inline-block mr-2 text-sm bg-gray-200 rounded-full px-2"
-												>
-													{tag}
-												</li>
-											))}
-										</ul>
-									</div>{' '}
+									<Link href={`/house/${id}/article/${index}`}>
+										<a className="block">
+											<h3 className="font-bold text-2xl">{article.name}</h3>
+											<p className="text-sm text-gray-500 mb-2">created by:</p>
+											<div className="text-base">{article.content}</div>
+											{/* Tags */}
+											<div className="mt-2">
+												<span className="font-semibold">Tags:</span>
+												<ul className="inline-block pl-2">
+													{article.tags.map((tag, index) => (
+														<li
+															key={index}
+															className="inline-block mr-2 text-sm bg-gray-200 rounded-full px-2"
+														>
+															{tag}
+														</li>
+													))}
+												</ul>
+											</div>{' '}
+										</a>
+									</Link>
 								</div>
 							</div>
 						))}

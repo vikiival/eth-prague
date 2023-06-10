@@ -1,0 +1,3 @@
+[submodule "server/lib/solmate"]
+	path = server/lib/solmate
+	url = https://github.com/transmissions11/solmate
