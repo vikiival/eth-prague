@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "openzeppelin-contracts/token/ERC721/IERC721.sol";
+import "openzeppelin-contracts/security/ReentrancyGuard.sol";
 
 /////@dev errors
 error NotApprovedForMarketplace();
 error NotApprovedForAuction();
 error AuctionNotEnded();
 
-contract marketPlace is ReentrancyGuard {
+contract MarketPlace is ReentrancyGuard {
     //@dev state variables
     address payable public immutable owner; //owner of the contract
     uint256 public itemCount; // item count
@@ -21,7 +21,7 @@ contract marketPlace is ReentrancyGuard {
 
     ////@dev struct of items
 
-    struct item {
+    struct Item {
         uint256 id;
         address nft;
         uint256 tokenId;
@@ -34,14 +34,14 @@ contract marketPlace is ReentrancyGuard {
     }
 
     //@dev mappings
-    mapping(uint256 => item) public items; // item id to item
+    mapping(uint256 => Item) public items; // item id to item
     mapping(uint256 => uint256) _security; // security front running
 
     //@modifiers
 
     //@dev security front running modifier
     modifier securityFrontRunning(uint256 _itemId) {
-        item storage Item = items[_itemId];
+        Item storage item = items[_itemId];
         require(
             _security[_itemId] == 0 || _security[_itemId] > block.number,
             "error security"
@@ -58,7 +58,7 @@ contract marketPlace is ReentrancyGuard {
     }
 
     ///////@dev events
-    event listed(
+    event Listed(
         uint256 id,
         address nft,
         uint256 tokenId,
@@ -66,7 +66,7 @@ contract marketPlace is ReentrancyGuard {
         address seller
     );
 
-    event sold(
+    event Sold(
         uint256 id,
         address nft,
         uint256 tokenId,
@@ -94,7 +94,7 @@ contract marketPlace is ReentrancyGuard {
                 revert NotApprovedForMarketplace();
             }
             itemCount++; // increment the item count
-            items[itemCount] = item( // add the item to the items mapping
+            items[itemCount] = Item( // add the item to the items mapping
                 itemCount,
                 _nft,
                 _tokenId,
@@ -105,7 +105,7 @@ contract marketPlace is ReentrancyGuard {
                 _description,
                 _image
             );
-            emit listed(itemCount, address(_nft), _tokenId, _price, msg.sender); // emit the listed event
+            emit Listed(itemCount, address(_nft), _tokenId, _price, msg.sender); // emit the listed event
         } else {
             revert("you are not the owner of this NFT");
         }
@@ -119,22 +119,22 @@ contract marketPlace is ReentrancyGuard {
         nonReentrant
         securityFrontRunning(_itemId)
     {
-        item storage Item = items[_itemId]; // get the item from the items mapping
-        require(Item.sold == false, "item already sold"); // check if the item is already sold
-        require(msg.value == Item.price, "insufficient funds"); // check if the msg.value is greater than or equal to the item price
-        IERC721(Item.nft).safeTransferFrom(
-            Item.seller,
+        Item storage item = items[_itemId]; // get the item from the items mapping
+        require(item.sold == false, "item already sold"); // check if the item is already sold
+        require(msg.value == item.price, "insufficient funds"); // check if the msg.value is greater than or equal to the item price
+        IERC721(item.nft).safeTransferFrom(
+            item.seller,
             msg.sender,
-            Item.tokenId
+            item.tokenId
         ); // trasnfer the nft to the buyer        Item.sold = true; // set the item sold state to true
-        uint256 sellerAmount = Item.price; // calculate the seller amount
-        payable(Item.seller).transfer(sellerAmount); // transfer the seller amount to the seller
-        emit sold(
-            Item.id,
-            Item.nft,
-            Item.tokenId,
-            Item.price,
-            Item.seller,
+        uint256 sellerAmount = item.price; // calculate the seller amount
+        payable(item.seller).transfer(sellerAmount); // transfer the seller amount to the seller
+        emit Sold(
+            item.id,
+            item.nft,
+            item.tokenId,
+            item.price,
+            item.seller,
             msg.sender
         ); // emit the sold event
         delete items[_itemId]; // delete the item from the items mapping
@@ -147,9 +147,9 @@ contract marketPlace is ReentrancyGuard {
         nonReentrant
         securityFrontRunning(_itemId)
     {
-        item storage Item = items[_itemId]; // get the item from the items mapping
-        require(Item.sold == false, "item already sold"); // check if the item is already sold
-        require(Item.seller == msg.sender, "you are not the seller"); // check if the msg.sender is the seller
+        Item storage item = items[_itemId]; // get the item from the items mapping
+        require(item.sold == false, "item already sold"); // check if the item is already sold
+        require(item.seller == msg.sender, "you are not the seller"); // check if the msg.sender is the seller
         delete items[_itemId]; // delete the item from the items mapping
     }
 
@@ -161,8 +161,8 @@ contract marketPlace is ReentrancyGuard {
 
     ///@dev get items for front end function
 
-    function getItems(uint256 _itemId) public view returns (item memory) {
-        item storage itemsList = items[_itemId]; // get specific item from the items mapping
+    function getItems(uint256 _itemId) public view returns (Item memory) {
+        Item storage itemsList = items[_itemId]; // get specific item from the items mapping
         return itemsList; // return the item
     }
 
@@ -174,7 +174,7 @@ contract marketPlace is ReentrancyGuard {
 
     ///@dev struct of auctions
 
-    struct auction {
+    struct Auction {
         uint256 id;
         address nft;
         uint256 tokenId;
@@ -190,13 +190,13 @@ contract marketPlace is ReentrancyGuard {
     }
 
     /////////////////@dev mappings
-    mapping(uint256 => auction) public auctions; // auction id to auction
+    mapping(uint256 => Auction) public auctions; // auction id to auction
     mapping(uint256 => uint256) _securityAuction; // security front running
 
     ////@dev modifiers
 
     modifier securityFrontRunningAuction(uint256 _itemId) {
-        auction storage Item = auctions[_itemId];
+        Auction storage item = auctions[_itemId];
         require(
             _security[_itemId] == 0 || _security[_itemId] > block.number,
             "error security"
@@ -205,21 +205,21 @@ contract marketPlace is ReentrancyGuard {
         _;
     }
     /////////////////////////////////@dev events
-    event listedAuction(
+    event ListedAuction(
         uint256 id,
         address nft,
         uint256 tokenId,
         uint256 price,
         address seller
     );
-    event bid(
+    event Bid(
         uint256 id,
         address nft,
         uint256 tokenId,
         uint256 price,
         address seller
     );
-    event soldAuction(
+    event SoldAuction(
         uint256 id,
         address nft,
         uint256 tokenId,
@@ -249,7 +249,7 @@ contract marketPlace is ReentrancyGuard {
                 revert NotApprovedForMarketplace();
             }
             auctionCount++; // increment the auction count
-            auctions[auctionCount] = auction( // add the auction to the auctions mapping
+            auctions[auctionCount] = Auction( // add the auction to the auctions mapping
                 auctionCount,
                 _nft,
                 _tokenId,
@@ -263,7 +263,7 @@ contract marketPlace is ReentrancyGuard {
                 _description,
                 _image
             );
-            emit listedAuction(
+            emit ListedAuction(
                 auctionCount,
                 address(_nft),
                 _tokenId,
@@ -283,22 +283,22 @@ contract marketPlace is ReentrancyGuard {
         nonReentrant
         securityFrontRunningAuction(_auctionId)
     {
-        auction storage Auction = auctions[_auctionId]; // get the auction from the auctions mapping
-        require(Auction.sold == false, "auction already sold"); // check if the auction is already sold
-        require(msg.value > Auction.price, "insufficient funds"); // check if the msg.value is greater than or equal to the auction price
-        require(block.timestamp < Auction.endTime, "auction has ended"); // check if the auction has ended
+        Auction storage auction = auctions[_auctionId]; // get the auction from the auctions mapping
+        require(auction.sold == false, "auction already sold"); // check if the auction is already sold
+        require(msg.value > auction.price, "insufficient funds"); // check if the msg.value is greater than or equal to the auction price
+        require(block.timestamp < auction.endTime, "auction has ended"); // check if the auction has ended
 
-        if (Auction.highestBidder != msg.sender) {
-            payable(Auction.highestBidder).transfer(Auction.price); // transfer the seller amount to the seller
+        if (auction.highestBidder != msg.sender) {
+            payable(auction.highestBidder).transfer(auction.price); // transfer the seller amount to the seller
         }
-        Auction.highestBidder = payable(msg.sender); // new best bidder
-        Auction.price = msg.value; // new auction price
-        emit bid(
-            Auction.id,
-            Auction.nft,
-            Auction.tokenId,
-            Auction.price,
-            Auction.seller
+        auction.highestBidder = payable(msg.sender); // new best bidder
+        auction.price = msg.value; // new auction price
+        emit Bid(
+            auction.id,
+            auction.nft,
+            auction.tokenId,
+            auction.price,
+            auction.seller
         ); // emit the bid event
     }
 
@@ -306,42 +306,42 @@ contract marketPlace is ReentrancyGuard {
         external
         securityFrontRunningAuction(_itemId)
     {
-        auction storage ItemAuction = auctions[_itemId];
+        Auction storage itemAuction = auctions[_itemId];
         require(
-            msg.sender == ItemAuction.seller,
+            msg.sender == itemAuction.seller,
             "you dont are the owner of the nft"
         );
         require(
-            ItemAuction.endTime < block.timestamp,
+            itemAuction.endTime < block.timestamp,
             "error time is not over"
         );
-        require(ItemAuction.sold == false, "error nft sold");
-        IERC721 nft = IERC721(ItemAuction.nft);
-        if (nft.getApproved(ItemAuction.tokenId) != address(this)) {
+        require(itemAuction.sold == false, "error nft sold");
+        IERC721 nft = IERC721(itemAuction.nft);
+        if (nft.getApproved(itemAuction.tokenId) != address(this)) {
             // if the nft is not approved for the marketplace
-            if (ItemAuction.highestBidder != address(0)) {
+            if (itemAuction.highestBidder != address(0)) {
                 // if there is a highest bidder
-               payable(ItemAuction.highestBidder).transfer(ItemAuction.price); // transfer the seller amount to the seller
+               payable(itemAuction.highestBidder).transfer(itemAuction.price); // transfer the seller amount to the seller
             }
 
             delete (auctions[_itemId]);
             revert NotApprovedForMarketplace();
         }
-        ItemAuction.sold = true;
+        itemAuction.sold = true;
 
-        payable(ItemAuction.seller).transfer(ItemAuction.price); // transfer the seller amount to the seller
-        IERC721(ItemAuction.nft).transferFrom(
-            ItemAuction.seller,
-            ItemAuction.highestBidder,
-            ItemAuction.tokenId
+        payable(itemAuction.seller).transfer(itemAuction.price); // transfer the seller amount to the seller
+        IERC721(itemAuction.nft).transferFrom(
+            itemAuction.seller,
+            itemAuction.highestBidder,
+            itemAuction.tokenId
         );
-        emit soldAuction(
-            ItemAuction.id,
-            ItemAuction.nft,
-            ItemAuction.tokenId,
-            ItemAuction.price,
-            ItemAuction.seller,
-            ItemAuction.highestBidder
+        emit SoldAuction(
+            itemAuction.id,
+            itemAuction.nft,
+            itemAuction.tokenId,
+            itemAuction.price,
+            itemAuction.seller,
+            itemAuction.highestBidder
         );
         delete (auctions[_itemId]);
     }
@@ -353,11 +353,11 @@ contract marketPlace is ReentrancyGuard {
         nonReentrant
         securityFrontRunningAuction(_itemId)
     {
-        auction storage Item = auctions[_itemId]; // get the auction from the auctions mapping
-        require(Item.sold == false, "auction already sold"); // check if the auction is already sold
-        require(Item.seller == msg.sender, "you are not the seller"); // check if the msg.sender is the seller
-        if (Item.startPrice != Item.price) {
-            payable(Item.highestBidder).transfer(Item.price); // transfer the seller amount to the seller
+        Auction storage item = auctions[_itemId]; // get the auction from the auctions mapping
+        require(item.sold == false, "auction already sold"); // check if the auction is already sold
+        require(item.seller == msg.sender, "you are not the seller"); // check if the msg.sender is the seller
+        if (item.startPrice != item.price) {
+            payable(item.highestBidder).transfer(item.price); // transfer the seller amount to the seller
         }
         delete auctions[_itemId]; // delete the auction from the auctions mapping
     }
