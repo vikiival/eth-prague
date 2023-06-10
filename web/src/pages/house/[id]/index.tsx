@@ -10,6 +10,7 @@ import registeryABI from '@/abi/RegistryAbi.json'
 import { $purify } from '@kodadot1/minipfs'
 
 import { articles } from '@/articels/articles'
+import Link from 'next/link'
 
 const NFT_CONTRACT_ADDRESS = '0x9dfef6f53783c7185c69f45a51bede2c32e4ac3e'
 const REGISTERY_CONTRACT_ADDRESS = '0x02101dfB77FDE026414827Fdc604ddAF224F0921'
@@ -133,23 +134,27 @@ const House: FC = () => {
 								</div>
 								{/* Article Information */}
 								<div className="w-2/3">
-									<h3 className="font-bold text-2xl">{article.name}</h3>
-									<p className="text-sm text-gray-500 mb-2">created by:</p>
-									<div className="text-base">{article.content}</div>
-									{/* Tags */}
-									<div className="mt-2">
-										<span className="font-semibold">Tags:</span>
-										<ul className="inline-block pl-2">
-											{article.tags.map((tag, index) => (
-												<li
-													key={index}
-													className="inline-block mr-2 text-sm bg-gray-200 rounded-full px-2"
-												>
-													{tag}
-												</li>
-											))}
-										</ul>
-									</div>{' '}
+									<Link href={`/house/${id}/article/${index}`}>
+										<a className="block">
+											<h3 className="font-bold text-2xl">{article.name}</h3>
+											<p className="text-sm text-gray-500 mb-2">created by:</p>
+											<div className="text-base">{article.content}</div>
+											{/* Tags */}
+											<div className="mt-2">
+												<span className="font-semibold">Tags:</span>
+												<ul className="inline-block pl-2">
+													{article.tags.map((tag, index) => (
+														<li
+															key={index}
+															className="inline-block mr-2 text-sm bg-gray-200 rounded-full px-2"
+														>
+															{tag}
+														</li>
+													))}
+												</ul>
+											</div>{' '}
+										</a>
+									</Link>
 								</div>
 							</div>
 						))}
