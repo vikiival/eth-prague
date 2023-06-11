@@ -8,7 +8,7 @@ export default function Header() {
   const router = useRouter();
 
   return (
-    <nav className=" w-full flex items-center justify-between p-6 bg-white shadow">
+    <nav className=" w-full flex items-center justify-between p-6 bg-white ">
       <div className="text-2xl font-dela-gothic text-black" >
         <Link href="/">
           <a>Quire</a>

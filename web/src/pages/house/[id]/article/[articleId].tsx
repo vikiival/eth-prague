@@ -30,41 +30,55 @@ const ArticlePage: FC = () => {
         <Header />
       </div>
       <ThemeSwitcher className="absolute bottom-6 right-6" />
-      <div className="container mx-auto p-4 py-20">
-        <div className="w-full py-10">
+      <div className="flex flex-col items-center py-20 space-y-6">
           {/* Article Image */}
-          <div className="w-full">
+          <div className="w-250 h-64 relative overflow-hidden rounded-md">
             <Image
               src={$purify(article.image)[0] || ''}
               alt={article.name}
-              layout="responsive"
-              width={1200}
-              height={600}
-              style={{ objectFit: 'contain' }}
+              layout="fill"
+              objectFit="cover"
+
               className="object-contain"
             />
           </div>
           {/* Article Info Section */}
-          <div className="mt-4">
-            <h3 className="text-2xl font-semibold">{article.name}</h3>
-            <p className="text-sm text-gray-500 mb-2">created by:</p>
-            <div className="text-base">{article.content}</div>
-            {/* Tags */}
-            <div className="mt-2">
-              <span className="font-semibold">Tags:</span>
-              <ul className="inline-block pl-2">
-                {article.tags.map((tag, index) => (
-                  <li key={index} className="inline-block mr-2 text-sm bg-gray-200 rounded-full px-2">
-                    {tag}
-                  </li>
-                ))}
-              </ul>
+          <div className="flex flex-col max-w-2xl w-full items-start">
+            <div className="text-base text-[#16392d] font-dela-gothic flex flex-col w-auto h-auto">
+              {article.name}
             </div>
-          </div>
+            <div className="flex justify-between items-center w-full h-auto">
+              <div className="flex items-center space-x-4">
+                <div className="text-sm font-roboto text-[#16392d] font-bold w-auto h-auto whitespace-nowrap flex flex-col">
+                  Creator:
+                </div>
+                <div className="flex items-center space-x-3 w-auto h-auto">
+                  <div className="w-5 h-5  flex items-center justify-center p-2.5 rounded-xl bg-center bg-no-repeat bg-cover overflow-hidden"
+                    style={{backgroundImage: `url('https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg')`}}>
+                  </div>
+                  <div className="text-sm text-[#16392d] font-roboto lowercase w-auto h-auto whitespace-nowrap flex flex-col">789OHUGN98JIO</div>
+                </div>
+              </div>
+              <div className="flex flex-col max-w-2xl w-auto h-auto space-y-6">
+                <div className="text-sm text-black font-roboto text-opacity-75">{article.content}</div>
+              </div>
+                          
+              {/* Tags */}
+              <div className="mt-2">
+                <span className="font-semibold">Tags:</span>
+                <ul className="inline-block pl-2">
+                  {article.tags.map((tag, index) => (
+                    <li key={index} className="inline-block mr-2 text-sm bg-gray-200 rounded-full px-2">
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default ArticlePage
+export default ArticlePage;
