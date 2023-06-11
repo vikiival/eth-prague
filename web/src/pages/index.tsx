@@ -13,18 +13,20 @@ import { Publication } from '@/interfaces'
 
 const Home: FC = () => {
 	return (
-		<div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+		<div className="relative flex items-top justify-start min-h-screen bg-white dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
 			<div className="w-full absolute top-0">
 				<Header />
 			</div>
 
 			<ThemeSwitcher className="absolute bottom-6 right-6" />
 			<div className="container mx-auto p-4">
-				<h1 className="text-2xl font-bold mb-4">Publications</h1>
+				<div className="mx-auto text-center">
+					<h1 className="font-bold mb-10 text-3xl font-dela-gothic">Browse Publications</h1>
+				</div>
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 					{mockPublications.map((publication: Publication) => (
 						<Link key={publication.id} href={`/house/${publication.id}`}>
-							<a key={publication.id} className="border rounded-lg overflow-hidden w-60 h-80">
+							<a key={publication.id} className="border border-black rounded-lg overflow-hidden w-60 h-80">
 								<div className="relative h-48 w-full">
 									<Image
 										src={publication.image}
