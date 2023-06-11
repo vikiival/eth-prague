@@ -17,8 +17,8 @@ import Link from 'next/link'
 const NFT_CONTRACT_ADDRESS = '0x9dfef6f53783c7185c69f45a51bede2c32e4ac3e'
 const REGISTERY_CONTRACT_ADDRESS = '0x02101dfB77FDE026414827Fdc604ddAF224F0921'
 const MARKETPLACE_CONTRACT_ADDRESS = '0xb1f3961d288696938f8976af6260aa24c6ea3c61'
-const IMPLEMENTATION = '0xf999F659c5Ab90E42E466B367BB56e8BD56cE524'
-const SALT = 6551
+const IMPLEMENTATION = '0x60c9D9798f43eDf78650d6Ff829F574243f1AA01'
+const SALT = 20
 
 const etherScanBaseUrl = 'https://goerli.etherscan.io/address/'
 
@@ -270,6 +270,7 @@ const House: FC<{ id: number }> = ({ id }) => {
 							</button>{' '}
 							<input
 								type="number"
+                                step={0.001}
 								value={listingPrice}
 								onChange={e => setListingPrice(Number(e.target.value))}
 								placeholder="Enter price"

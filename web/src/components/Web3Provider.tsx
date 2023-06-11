@@ -11,7 +11,7 @@ const ALCHEMY_API_KEY = 'XMzdOiwPLUhKZ0OfdoYY2uZ4c64qZyaG'
 
 
 const { chains } = configureChains(
-	[goerli],
+	[goerli, taiko],
 	[alchemyProvider({ apiKey: ALCHEMY_API_KEY }), publicProvider()],
   )
 const client = createClient(
