@@ -262,7 +262,7 @@ const House: FC<{ id: number }> = ({ id }) => {
 								className={`bg-blue-500 text-white px-4 py-2 rounded ${
 									!isSubmitBtnEnabled() ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
 								}`}
-								onClick={handleListForSell}
+								onClick={onSubmmitBtnClick}
 							>
 								{submitBtnText}
 							</button>{' '}
