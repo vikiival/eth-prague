@@ -59,9 +59,13 @@ const ArticlePage: FC = () => {
                   <div className="text-sm text-[#16392d] font-roboto lowercase w-auto h-auto whitespace-nowrap flex flex-col">789OHUGN98JIO</div>
                 </div>
               </div>
-              <div className="flex flex-col max-w-2xl w-auto h-auto space-y-6">
-                <div className="text-sm text-black font-roboto text-opacity-75">{article.content}</div>
+              <div className="w-auto  font-roboto h-auto px-4 py-1 border-2 border-[#84eda6] rounded-full bg-[#84eda6]">
+                <div className="text-sm text-[#16392d] font-roboto w-auto h-auto whitespace-nowrap flex flex-col">View publication</div>
               </div>
+            </div>
+            <div className="flex flex-col max-w-2xl w-auto h-auto space-y-6">
+              <div className="text-sm text-black font-roboto text-opacity-75">{article.content}</div>
+            </div>
                           
               {/* Tags */}
               <div className="mt-2">
@@ -74,7 +78,7 @@ const ArticlePage: FC = () => {
                   ))}
                 </ul>
               </div>
-            </div>
+            
         </div>
       </div>
     </div>
