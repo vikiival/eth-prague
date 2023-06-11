@@ -10,7 +10,7 @@ module.exports = {
   
 			},
 			width: {
-				'ee': '680px',
+				'250': '680px',
 			  },
 			height: {
 				'250': '250px',
