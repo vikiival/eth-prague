@@ -5,6 +5,7 @@ import { publicProvider, } from 'wagmi/providers/public'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { mainnet, goerli } from 'wagmi/chains'
 import { ConnectKitProvider, getDefaultClient } from 'connectkit'
+import { taiko, mantle } from '@/chains'
 
 const ALCHEMY_API_KEY = 'XMzdOiwPLUhKZ0OfdoYY2uZ4c64qZyaG'
 

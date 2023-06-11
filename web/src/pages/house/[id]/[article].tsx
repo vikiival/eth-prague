@@ -40,17 +40,16 @@ const Article: FC = () => {
 			</div>
 
 			<ThemeSwitcher className="absolute bottom-6 right-6" />
-		<div className="container mx-auto p-4">
-				<div className="w-full">
+		
+			<div className="flex flex-col items-center py-20 space-y-6">
 					{/* Banner Image */}
-					<div className="w-full">
+					<div className="w-250 h-64 relative overflow-hidden rounded-md">
 						<Image
 							src={publishedArticle.image || ''}
 							alt={publishedArticle.title}
-							layout="responsive"
-							width={1200}
-							height={200}
-							className="object-cover"
+							layout="fill"
+							objectFit="cover"
+							className="object-contain"
 						/>
 					</div>
 					<h1 className="text-3xl mt-10 mb-3">{publishedArticle.title}</h1>
@@ -75,7 +74,6 @@ const Article: FC = () => {
 								{publishedArticle.content}
 							</p>
 						</div>
-				</div>
 			</div>
 
 
