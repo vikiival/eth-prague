@@ -156,15 +156,13 @@ const House: FC<{ id: number }> = ({ id }) => {
 			<div className="container mx-auto p-4 py-20">
 				<div className="w-full py-10">
 					{/* Banner Image */}
-					<div className="w-full">
+					<div className="w-full h-250 relative overflow-hidden rounded-md">
 						<Image
 							src={publication.image || ''}
 							alt={publication.name}
-							layout="responsive"
 							// fill={true}
-							width={1200}
-							height={600}
-							style={{ objectFit: 'contain' }}
+							layout="fill"
+							objectFit="cover"
 							className="object-contain"
 						/>
 					</div>
