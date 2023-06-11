@@ -23,15 +23,14 @@ const SALT = 6551
 const etherScanBaseUrl = 'https://goerli.etherscan.io/address/'
 
 const House: FC<{ id: number }> = ({ id }) => {
-	const router = useRouter()
 	const [publication, setPublication] = useState(null)
 	const [houseAddress, setHouseAddress] = useState(null)
 	const [owner, setOwner] = useState(null)
-	const [houseId, setHouseId] = useState(null)
+	const [isApproved, setIsApproved] = useState(false)
+	const [listingPrice, setListingPrice] = useState(0.3)
 	const { address, isConnecting, isDisconnected, isConnected } = useAccount()
 
-
-    const getEtherScanLink = (address: string) => {
+	const getEtherScanLink = (address: string) => {
 		return `${etherScanBaseUrl}${address}`
 	}
 
@@ -60,29 +59,49 @@ const House: FC<{ id: number }> = ({ id }) => {
 
 	const isOwner = owner === address
 
-
+	const { data: addressOfApprovee } = useContractRead({
+		...nftContract,
+		functionName: 'getApproved',
+		args: [id],
+	})
 
 	const { config } = usePrepareContractWrite({
 		...nftContract,
 		functionName: 'approve',
 		args: [MARKETPLACE_CONTRACT_ADDRESS, id],
 	})
-	const { data, isLoading, isSuccess, write } = useContractWrite(config)
+	const { write: writeApproveTransfer } = useContractWrite(config)
+
+	const { config: listForSellConfig } = usePrepareContractWrite({
+		addressOrName: MARKETPLACE_CONTRACT_ADDRESS,
+		contractInterface: marketPlaceabi,
+		functionName: 'listItem',
+		args: [NFT_CONTRACT_ADDRESS, id, (BigInt(listingPrice*10**18)).toString()],
+	})
+
+	const { write: writeListForSell } = useContractWrite(listForSellConfig)
+
+	const handleListForSell = async () => {
+		try {
+			const result = await writeListForSell()
+			console.log(result)
+		} catch (error) {
+			console.error('List for sell failed', error)
+		}
+	}
 
 	const handleApprove = async () => {
 		try {
-		  // Write to contract (in this case, approving something). Note, the `write` function is already destructured from useContractWrite hook.
-		  const result = await write();
-		  // Log the result or handle it as per your need
-		  console.log(result);
+			// Write to contract (in this case, approving something). Note, the `write` function is already destructured from useContractWrite hook.
+			const result = await writeApproveTransfer()
+			// Log the result or handle it as per your need
+			console.log(result)
+			setIsApproved(true)
 		} catch (error) {
-		  // Handle error
-		  console.error('Approval failed', error);
+			// Handle error
+			console.error('Approval failed', error)
 		}
-	  };
-	
-
-
+	}
 
 	useEffect(() => {
 		if (registeryData) {
@@ -114,9 +133,18 @@ const House: FC<{ id: number }> = ({ id }) => {
 		}
 	}, [nftData])
 
+	const isSubmitBtnEnabled = () => {
+		if (isOwner) {
+			return Boolean(addressOfApprovee) && isConnected
+		} else {
+			return isConnected
+		}
+	}
+
+	const submitBtnText = isOwner ? 'List' : 'Buy'
 
 	// If id or data is not available, return loading text
-	if (!id || !publication) {
+	if (!publication) {
 		return <div>Loading...</div>
 	}
 	return (
@@ -152,7 +180,7 @@ const House: FC<{ id: number }> = ({ id }) => {
 								</a>
 							</div>
 							<div className="mt-2">
-								<span>House Address:</span>{' '}
+								<span>Approvee: {addressOfApprovee}</span> <span>House Address:</span>{' '}
 								<a className="text-blue-500 underline" href={getEtherScanLink(houseAddress)}>
 									{houseAddress}
 								</a>
@@ -170,11 +198,19 @@ const House: FC<{ id: number }> = ({ id }) => {
 							</button>
 							<button
 								className={`bg-blue-500 text-white px-4 py-2 rounded ${
-									!isConnected ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
+									!isSubmitBtnEnabled() ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
 								}`}
+                                onClick={handleListForSell}
 							>
-								Buy
+								{submitBtnText}
 							</button>{' '}
+							<input
+								type="number"
+								value={listingPrice}
+								onChange={e => setListingPrice(Number(e.target.value))}
+								placeholder="Enter price"
+								className="border rounded-md px-2 py-1 mr-2"
+							/>
 						</div>
 					</div>
 					{/* Articles Section */}
