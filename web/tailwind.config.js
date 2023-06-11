@@ -9,6 +9,13 @@ module.exports = {
 				'roboto': ['Roboto', 'sans-serif'],
   
 			},
+			width: {
+				'ee': '680px',
+			  },
+			height: {
+				'250': '250px',
+			}
+
 		},
 	},
 	plugins: [],
