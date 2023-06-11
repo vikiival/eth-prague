@@ -214,7 +214,7 @@ const House: FC<{ id: number }> = ({ id }) => {
 			<div className="container mx-auto p-4 py-20">
 				<div className="w-full py-10">
 					{/* Banner Image */}
-					<div className="w-full h-250 relative overflow-hidden rounded-md">
+					<div className="w-full h-250 relative overflow-hidden rounded-t-lg">
 						<Image
 							src={publication.image || ''}
 							alt={publication.name}
@@ -223,12 +223,14 @@ const House: FC<{ id: number }> = ({ id }) => {
 							objectFit="cover"
 							className="object-contain"
 						/>
+						
 					</div>
+					
 					{/* Info Section */}
-					<div className="flex justify-between items-start mt-4">
+					<div className="flex bg-[#16392D] rounded-b-lg text-white p-7 justify-between items-start">
 						<div>
-							<div className="text-2xl font-semibold">{publication.name}</div>
-							<div className="mt-2">{publication.description}</div>
+							<div className="text-3xl font-dela-gothic text-[#84EDA6]">{publication.name}</div>
+							<div className="mt-2 max-w-md text-[#A1BBAB]">{publication.description}</div>
 							<div className="mt-2">
 								<span>Owner:</span>{' '}
 								<a className="text-blue-500 underline" href={getEtherScanLink(owner)}>
