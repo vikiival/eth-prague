@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.0;
 
 import "openzeppelin-contracts/token/ERC721/IERC721.sol";
 import "openzeppelin-contracts/security/ReentrancyGuard.sol";
@@ -136,8 +136,7 @@ contract Marketplace is ReentrancyGuard {
     {
         delete (s_listings[nftAddress][tokenId]);
         emit ItemCanceled(msg.sender, nftAddress, tokenId);
-    }
-
+    }   
     /*
      * @notice Method for buying listing
      * @notice The owner of an NFT could unapprove the marketplace,
