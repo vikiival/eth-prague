@@ -28,6 +28,9 @@ const House: FC<{ id: number }> = ({ id }) => {
 	const [owner, setOwner] = useState(null)
 	const [isApproved, setIsApproved] = useState(false)
 	const [listingPrice, setListingPrice] = useState(0.3)
+	const [price, setPrice] = useState<number>(null)
+	const [seller, setSeller] = useState(null)
+
 	const { address, isConnecting, isDisconnected, isConnected } = useAccount()
 
 	const getEtherScanLink = (address: string) => {
@@ -65,6 +68,30 @@ const House: FC<{ id: number }> = ({ id }) => {
 		args: [id],
 	})
 
+	const { data: listing } = useContractRead({
+		addressOrName: MARKETPLACE_CONTRACT_ADDRESS,
+		contractInterface: marketPlaceabi,
+		functionName: 'getListing',
+		args: [NFT_CONTRACT_ADDRESS, id],
+	})
+
+	useEffect(() => {
+		console.log('listing object:', listing)
+		if (listing && Array.isArray(listing) && listing[0] && listing[1]) {
+			// Assuming that listing[0] is a price object and listing[1] is the seller address
+			const priceInWei = BigInt(listing[0]._hex)
+			const priceInEth = Number(priceInWei) / 10 ** 18
+			console.log('priceInEth:', priceInEth)
+
+			setPrice(priceInEth)
+			setSeller(listing[1])
+		} else {
+			// If listing is null or does not have the expected shape, reset the state
+			setPrice(null)
+			setSeller(null)
+		}
+	}, [listing])
+
 	const { config } = usePrepareContractWrite({
 		...nftContract,
 		functionName: 'approve',
@@ -76,7 +103,7 @@ const House: FC<{ id: number }> = ({ id }) => {
 		addressOrName: MARKETPLACE_CONTRACT_ADDRESS,
 		contractInterface: marketPlaceabi,
 		functionName: 'listItem',
-		args: [NFT_CONTRACT_ADDRESS, id, (BigInt(listingPrice*10**18)).toString()],
+		args: [NFT_CONTRACT_ADDRESS, id, BigInt(listingPrice * 10 ** 18).toString()],
 	})
 
 	const { write: writeListForSell } = useContractWrite(listForSellConfig)
@@ -179,6 +206,12 @@ const House: FC<{ id: number }> = ({ id }) => {
 									{owner}
 								</a>
 							</div>
+							{price && seller ? (
+								<div className="mt-2">Price: {price} ETH</div>
+							) : (
+								<div className="mt-2">Not for sale</div>
+							)}
+
 							<div className="mt-2">
 								<span>Approvee: {addressOfApprovee}</span> <span>House Address:</span>{' '}
 								<a className="text-blue-500 underline" href={getEtherScanLink(houseAddress)}>
@@ -200,7 +233,7 @@ const House: FC<{ id: number }> = ({ id }) => {
 								className={`bg-blue-500 text-white px-4 py-2 rounded ${
 									!isSubmitBtnEnabled() ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
 								}`}
-                                onClick={handleListForSell}
+								onClick={handleListForSell}
 							>
 								{submitBtnText}
 							</button>{' '}
