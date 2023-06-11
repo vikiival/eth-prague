@@ -130,6 +130,37 @@ const House: FC<{ id: number }> = ({ id }) => {
 		}
 	}
 
+
+    const { config: buyItemConfig } = usePrepareContractWrite({
+        addressOrName: MARKETPLACE_CONTRACT_ADDRESS,
+        contractInterface: marketPlaceabi,
+        functionName: 'buyItem',
+        args: [NFT_CONTRACT_ADDRESS, id],
+    });
+    const { write: writeBuyItem } = useContractWrite(buyItemConfig);
+
+    
+    const handleBuy = async () => {
+        try {
+            // Write to contract (in this case, buying an item). Note, the `write` function is already destructured from useContractWrite hook.
+            const result = await writeBuyItem();
+            // Log the result or handle it as per your need
+            console.log(result);
+        } catch (error) {
+            // Handle error
+            console.error('Purchase failed', error);
+        }
+    };
+
+    const onSubmmitBtnClick = async () => {
+        if (isOwner) {
+            await handleListForSell();
+        } else {
+            await handleBuy();
+        }
+    }
+    
+
 	useEffect(() => {
 		if (registeryData) {
 			setHouseAddress(registeryData)
@@ -233,7 +264,7 @@ const House: FC<{ id: number }> = ({ id }) => {
 								className={`bg-blue-500 text-white px-4 py-2 rounded ${
 									!isSubmitBtnEnabled() ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
 								}`}
-								onClick={handleListForSell}
+								onClick={onSubmmitBtnClick}
 							>
 								{submitBtnText}
 							</button>{' '}
