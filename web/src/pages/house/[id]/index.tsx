@@ -8,7 +8,7 @@ const HousePage: FC = () => {
 	const { id } = router.query
 
 	// If id is not available, return loading text
-	if (!id) {
+	if (id === undefined) {
 		return <div>Loading...</div>
 	}
 
