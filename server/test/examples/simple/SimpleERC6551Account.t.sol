@@ -10,12 +10,12 @@ import "../../mocks/MockERC6551Account.sol";
 
 contract AccountTest is Test {
     ERC6551Registry public registry;
-    SimpleERC6551Account public implementation;
+    SimpleAccount public implementation;
     MockERC721 nft = new MockERC721();
 
     function setUp() public {
         registry = new ERC6551Registry();
-        implementation = new SimpleERC6551Account();
+        implementation = new SimpleAccount();
     }
 
     function testDeploy() public {
